@@ -1500,6 +1500,11 @@ fn run_action<'a, P, C>(
                     window.raw.set_resizable(resizable);
                 }
             }
+            window::Action::SetVisible(id, visible) => {
+                if let Some(window) = window_manager.get_mut(id) {
+                    window.raw.set_visible(visible);
+                }
+            }
             window::Action::GetSize(id, channel) => {
                 if let Some(window) = window_manager.get_mut(id) {
                     let size = window.logical_size();

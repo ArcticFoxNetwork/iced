@@ -163,6 +163,14 @@ pub enum Action {
     /// from being passed to whatever is underneath.
     DisableMousePassthrough(Id),
 
+    /// Set the visibility of the window.
+    ///
+    /// ## Platform-specific
+    ///
+    /// - **Wayland:** Uses `wl_surface.attach(None)` to hide the window.
+    ///   This is experimental and may not work with all compositors.
+    SetVisible(Id, bool),
+
     /// Set the minimum inner window size.
     SetMinSize(Id, Option<Size>),
 
@@ -363,6 +371,16 @@ pub fn is_minimized(id: Id) -> Task<Option<bool>> {
 /// Minimizes the window.
 pub fn minimize<T>(id: Id, minimized: bool) -> Task<T> {
     task::effect(crate::Action::Window(Action::Minimize(id, minimized)))
+}
+
+/// Sets the visibility of the window.
+///
+/// ## Platform-specific
+///
+/// - **Wayland:** Uses `wl_surface.attach(None)` to hide the window.
+///   This is experimental and may not work with all compositors.
+pub fn set_visible<T>(id: Id, visible: bool) -> Task<T> {
+    task::effect(crate::Action::Window(Action::SetVisible(id, visible)))
 }
 
 /// Gets the position in logical coordinates of the window with the given [`Id`].
