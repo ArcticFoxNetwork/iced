@@ -596,6 +596,8 @@ impl Renderer {
                     for (instance, clip_bounds) in need_render {
                         instance.primitive.render(
                             &primitive_storage,
+                            &self.engine.device,
+                            &self.engine.queue,
                             encoder,
                             frame,
                             &clip_bounds,

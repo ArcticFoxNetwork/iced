@@ -56,10 +56,16 @@ pub trait Primitive: Debug + MaybeSend + MaybeSync + 'static {
     ///
     /// This will only be called if [`draw`](Self::draw) returns `false`.
     ///
+    /// The `device` and `queue` parameters are provided for advanced rendering
+    /// techniques that require creating GPU resources during the render phase,
+    /// such as multi-pass blur effects.
+    ///
     /// By default, it does nothing.
     fn render(
         &self,
         _pipeline: &Self::Pipeline,
+        _device: &wgpu::Device,
+        _queue: &wgpu::Queue,
         _encoder: &mut wgpu::CommandEncoder,
         _target: &wgpu::TextureView,
         _clip_bounds: &Rectangle<u32>,
@@ -109,6 +115,8 @@ pub(crate) trait Stored:
     fn render(
         &self,
         storage: &Storage,
+        device: &wgpu::Device,
+        queue: &wgpu::Queue,
         encoder: &mut wgpu::CommandEncoder,
         target: &wgpu::TextureView,
         clip_bounds: &Rectangle<u32>,
@@ -161,6 +169,8 @@ impl<P: Primitive> Stored for BlackBox<P> {
     fn render(
         &self,
         storage: &Storage,
+        device: &wgpu::Device,
+        queue: &wgpu::Queue,
         encoder: &mut wgpu::CommandEncoder,
         target: &wgpu::TextureView,
         clip_bounds: &Rectangle<u32>,
@@ -172,7 +182,7 @@ impl<P: Primitive> Stored for BlackBox<P> {
             .expect("renderer should have the proper type");
 
         self.primitive
-            .render(renderer, encoder, target, clip_bounds);
+            .render(renderer, device, queue, encoder, target, clip_bounds);
     }
 }
 
